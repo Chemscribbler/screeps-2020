@@ -36,14 +36,6 @@ Creep.prototype.carrier_role = function(){
     if(this.memory.pickup && this.store.getFreeCapacity(RESOURCE_ENERGY)===0){
         this.memory.pickup = false
         this.memory.target = this.find_optimal_dropoff().id
-        // const dropoff_sites = this.room.energy_dropoff_sites
-        // var least_filled = 20000000
-        // dropoff_sites.forEach(element => {
-        //     if(element.store.getFreeCapacity(RESOURCE_ENERGY) < least_filled){
-        //         least_filled = element.store.getFreeCapacity(RESOURCE_ENERGY)
-        //         this.memory.target = element.id
-        //     }
-        // });
     }
     if(!this.memory.pickup && this.store.getUsedCapacity(RESOURCE_ENERGY)===0){
         //Get most filled pickup site
@@ -68,14 +60,6 @@ Creep.prototype.carrier_role = function(){
         if(this.transfer(tgt,RESOURCE_ENERGY) === ERR_NOT_IN_RANGE){
             this.moveTo(tgt)
         } else if (this.transfer(tgt,RESOURCE_ENERGY)===ERR_FULL){
-        //     const dropoff_sites = this.room.energy_dropoff_sites
-        //     var least_filled = 20000000
-        //     dropoff_sites.forEach(element => {
-        //         if(element.store.getFreeCapacity(RESOURCE_ENERGY) < least_filled){
-        //             least_filled = element.store.getFreeCapacity(RESOURCE_ENERGY)
-        //             this.memory.target = element.id
-        //     }
-        // });
             this.memory.target = this.find_optimal_dropoff().id
         }
     }
