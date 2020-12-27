@@ -79,7 +79,6 @@ Creep.prototype.builder_role = function(){
                 }
             }
         for(const key in this.room.memory.active_sites){
-            // console.log(key)
             if(this.room.memory.active_sites[key]['priority'] > max_prio){
                 max_prio = this.room.memory.active_sites[key]['priority']
                 this.memory.siteID = key
@@ -123,29 +122,4 @@ Creep.prototype.builder_role = function(){
             }
         }
     }
-
-    //Logic is 4 casscading ifs
-    //If full and siteID != null, move and build (also make sure target == siteID)
-    //If have energy and target == siteID move and build
-    //if have energy- check is mining from source: if so continue, otherwise go build
-    //else you have no energy- so set target to this.find_energy()
-    // var tgt = Game.getObjectById(this.memory.target)
-    // // this.say(this.store.getFreeCapacity(RESOURCE_ENERGY))
-    // if(this.store.getFreeCapacity(RESOURCE_ENERGY) === 0 && this.memory.siteID !== null){
-    //     if(this.memory.siteID !== this.memory.target){
-    //         this.memory.target = this.memory.siteID
-    //         tgt = Game.getObjectById(this.memory.target)
-    //     }
-    //     this.try_build(tgt)
-    // } else if(this.store.getUsedCapacity(RESOURCE_ENERGY) > 0 && this.memory.siteID === this.memory.target){
-    //     this.try_build(tgt)
-    // } else if(this.store.getFreeCapacity(RESOURCE_ENERGY) > 0){
-    //     if(tgt.energy !== undefined){
-    //         if(this.harvest(tgt) === ERR_NOT_IN_RANGE){
-    //             this.moveTo(tgt,{reusePath: 20})
-    //         }
-    //     } else{
-    //         this.memory.target = null
-    //     }
-    // }
 }
