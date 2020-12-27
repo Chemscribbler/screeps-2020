@@ -18,7 +18,6 @@ module.exports.loop = function (){
         }
         if(Game.time % 10 === 1){
             for(const roomName in Game.rooms){
-                // console.log(roomName)
                 const room = Game.rooms[roomName]
                 room.spawn.print_creep()
                 if(Game.time % 1000 === 1){
@@ -44,13 +43,9 @@ module.exports.loop = function (){
             const t_search = Game.rooms[rName].find(FIND_MY_STRUCTURES,{filter: s => s.structureType === STRUCTURE_TOWER})
             if(t_search.length > 0){
                 t_search.forEach(tower =>{
-                    // console.log(`${tower.id} is running`)
                     tower.run()
                 })
             }
         }
-        // if(Game.cpu.getUsed()>5){
-        //     console.log(`${Game.time}: ${Game.cpu.getUsed()}`)
-        // }
     })
 }
