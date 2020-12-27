@@ -80,15 +80,12 @@ Spawn.prototype.gen_creep_body = function(creep_role){
         'upgrader': {'part_ratios':{'work':2,'carry':1,'move':1},'ratio_cost':300,'special_rules':false},
         'rcl1': {'part_ratios':{'work':1,'carry':1,'move':1},'ratio_cost':200,'special_rules':true}
     }
-    // console.log(body_plans[creep_role])
     if(body_plans[creep_role]['special_rules']){
         switch(creep_role){
             case 'harvester':
                 return Spawn.prototype.gen_harvester_body(energy_budget)
-                break
             case 'rcl1':
                 return [WORK,CARRY, CARRY,MOVE, MOVE]
-                break
             case 'carrier':
                 energy_budget = Math.min(energy_budget, BODYPART_COST['move']*5+BODYPART_COST['carry']*10)
                 const sections = Math.floor(energy_budget/body_plans[creep_role]['ratio_cost'])
@@ -101,13 +98,7 @@ Spawn.prototype.gen_creep_body = function(creep_role){
                     
                 }
                 return body_template
-                break;
         }
-        // if(creep_role === 'harvester'){
-        //     return Spawn.prototype.gen_harvester_body(energy_budget)   
-        // } else if(creep_role === 'rcl1'){
-        //     return [WORK,CARRY, CARRY,MOVE, MOVE]
-        // }
     } else {
         const sections = Math.floor(energy_budget/body_plans[creep_role]['ratio_cost'])
         var body_template = []
