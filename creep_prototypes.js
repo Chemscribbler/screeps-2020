@@ -113,3 +113,23 @@ Creep.prototype.find_energy = function(){
         return this.room.free_source
     }
 }
+
+Creep.prototype.check_pickup= function(target){
+    if(target.structureType !== undefined){
+        if(target.store.getUsedCapacity(RESOURCE_ENERGY) > 0){
+            return target
+        } else{
+            return this.find_energy()
+        }
+    } else {
+        if(this.ticksToLive % 10 === 4){
+            if(target.id === this.find_energy().id){
+                return target
+            } else {
+                return this.find_energy()
+            }
+        } else {
+            return target
+        }
+    }
+}
