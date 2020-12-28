@@ -12,7 +12,7 @@ var manage_harvesting = function(room){
         if(room.memory.harvester_creeps === undefined){
             room.memory.harvester_creeps = {}
         }
-        if(room.spawn !== null){
+        if(room.spawn !== undefined){
             if(Object.keys(room.memory.harvester_creeps).length <room.memory.num_sources){
                 if(room.source_storage.length === room.memory.num_sources){
                     room.spawn.request_creep('harvester')
@@ -51,18 +51,19 @@ var manage_harvesting = function(room){
         }
         var work_count = 0
         if(energy_per_cycle >= 0){
-            if(room.spawn !== null){
-            if(Object.keys(room.memory.upgrader_creeps).length === 0 || (room.free_energy > 40000 && Object.keys(room.memory.upgrader_creeps).length < 2)){
-                room.spawn.request_creep('upgrader')
-            } else {
-                for(creep in room.memory.upgrader_creeps){           
-                    for(part in Game.getObjectById(creep)){
-                        if(part === WORK){
-                            work_count++
+            if(room.spawn !== undefined){
+                if(Object.keys(room.memory.upgrader_creeps).length === 0 || (room.free_energy > 40000 && Object.keys(room.memory.upgrader_creeps).length < 2)){
+                    room.spawn.request_creep('upgrader')
+                } else {
+                    for(creep in room.memory.upgrader_creeps){           
+                        for(part in Game.getObjectById(creep)){
+                            if(part === WORK){
+                                work_count++
+                            }
                         }
                     }
                 }
-            }}
+            }
             // console.log(Math.max(0,energy_per_cycle-(work_count*ENERGY_REGEN_TIME)))
             energy_per_cycle = Math.max(0,energy_per_cycle-(work_count*ENERGY_REGEN_TIME))
         }
@@ -129,7 +130,8 @@ var manage_harvesting = function(room){
     
         if(room.spawn !== null &&
         Object.keys(room.memory.active_sites).length > Object.keys(room.memory.builder_creeps).length && 
-        Object.keys(room.memory.builder_creeps).length<3){
+        Object.keys(room.memory.builder_creeps).length<3 &&
+        room.spawn !== undefined){
             room.spawn.request_creep('builder')
         }
         if(work_capacity > total_cost){
@@ -150,7 +152,10 @@ var manage_harvesting = function(room){
             if(room.memory.carrier_creeps === undefined){
                 room.memory.carrier_creeps = {}
             }
-            if(Object.keys(room.memory.carrier_creeps).length < 2){
+            if(
+                Object.keys(room.memory.carrier_creeps).length < 2 &&
+                room.spawn !== undefined
+            ){
                 room.spawn.request_creep('carrier')        
             }
         }
@@ -160,13 +165,18 @@ var manage_harvesting = function(room){
        if(Game.time % 100 === 0){
            room.memory.repair_sites = {}
            console.log("Scanning for repairs")
-           var search = room.find(FIND_STRUCTURES,{filter: s => (s.hits/s.hitsMax < .4 && s.structureType !== STRUCTURE_RAMPART)})
+           var search = room.find(FIND_STRUCTURES,{
+               filter: s => (s.hits/s.hitsMax < .4 && 
+               (s.structureType !== STRUCTURE_RAMPART || s.structureType !== STRUCTURE_WALL))})
            search.forEach(site =>{
             //   console.log(site)
                room.memory.repair_sites[site.id] = site.hits/site.hitsMax
            })
        }
-       if(Object.keys(room.memory.repair_sites).length > 0 && Object.keys(room.memory.builder_creeps).length === 0){
+       if(
+           Object.keys(room.memory.repair_sites).length > 0 && 
+           Object.keys(room.memory.builder_creeps).length === 0 &&
+           room.spawn !== undefined){
            room.spawn.request_creep("builder")
        }
     }
