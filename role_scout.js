@@ -1,15 +1,15 @@
-Creep.prototype.init_claimer = function(){
+Creep.prototype.init_scout = function(){
     if(this.memory.target_room === undefined){
         console.log(`${this.name} is missing a target claim`)
     }
     this.memory.target = null
 }
 
-Creep.prototype.cleanup_claimer = function(){
+Creep.prototype.cleanup_scout = function(){
 
 }
 
-Creep.prototype.claimer_role = function(){
+Creep.prototype.scout_role = function(){
     if(this.room.name === this.memory.target_room){
         this.moveTo(RoomPosition(25,25,this.target_room))
     } else {
