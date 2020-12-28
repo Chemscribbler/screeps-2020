@@ -32,15 +32,15 @@ Creep.prototype.sapper_role = function(){
     }
 
     Creep.prototype.valid_target = function(){
-            if(target === null){
+            if(target === null && this.memory.target.roomName === undefined){
                 return false
             //Target could be RoomPosition or Wall/Rampart
             //Logic is if this is a position- check to see if target.room is a property
-            } else if(target.roomName !== undefined) {
-                if(this.room.name === target.roomName){
-                    return true
-                } else{
+            } else if(this.memory.target.roomName !== undefined) {
+                if(this.room.name === this.memory.target.roomName){
                     return false
+                } else{
+                    return true
                 }
             } else if(target.room.name === this.room.name){
                 return true
@@ -68,8 +68,8 @@ Creep.prototype.sapper_role = function(){
             this.moveTo(target)
             break;
         case ERR_INVALID_TARGET:
-            this.moveTo(target)
-            this.memory.next_check = Game.time + 20
+            this.moveTo(this.memory.target.x, this.memory.target.y)
+            // this.memory.next_check = Game.time + 20
         default:
             break;
     }

@@ -20,9 +20,10 @@ module.exports.loop = function (){
         if(Game.time % 10 === 1){
             for(const roomName in Game.rooms){
                 const room = Game.rooms[roomName]
-                room.spawn.print_creep()
-                if(Game.time % 1000 === 1){
-                    Game.rooms[roomName].memory.towers = Game.rooms[roomName].find(FIND_STRUCTURES,{filter: s => s.structureType === STRUCTURE_TOWER})
+                try{
+                    room.spawn.print_creep()
+                } catch{
+                    console.log(`No spawn in ${room.name}`)
                 }
             }
         }
