@@ -12,12 +12,13 @@ var manage_harvesting = function(room){
         if(room.memory.harvester_creeps === undefined){
             room.memory.harvester_creeps = {}
         }
-    
-        if(Object.keys(room.memory.harvester_creeps).length <room.memory.num_sources){
-            if(room.source_storage.length === room.memory.num_sources){
-                room.spawn.request_creep('harvester')
-            } else{
-                room.spawn.request_creep('rcl1')
+        if(room.spawn !== null){
+            if(Object.keys(room.memory.harvester_creeps).length <room.memory.num_sources){
+                if(room.source_storage.length === room.memory.num_sources){
+                    room.spawn.request_creep('harvester')
+                } else{
+                 room.spawn.request_creep('rcl1')
+                }
             }
         }
     
@@ -50,6 +51,7 @@ var manage_harvesting = function(room){
         }
         var work_count = 0
         if(energy_per_cycle >= 0){
+            if(room.spawn !== null){
             if(Object.keys(room.memory.upgrader_creeps).length === 0 || (room.free_energy > 40000 && Object.keys(room.memory.upgrader_creeps).length < 2)){
                 room.spawn.request_creep('upgrader')
             } else {
@@ -60,7 +62,7 @@ var manage_harvesting = function(room){
                         }
                     }
                 }
-            }
+            }}
             // console.log(Math.max(0,energy_per_cycle-(work_count*ENERGY_REGEN_TIME)))
             energy_per_cycle = Math.max(0,energy_per_cycle-(work_count*ENERGY_REGEN_TIME))
         }
@@ -125,7 +127,9 @@ var manage_harvesting = function(room){
         //     room.spawn.request_creep('builder')
         // }
     
-        if(Object.keys(room.memory.active_sites).length > Object.keys(room.memory.builder_creeps).length && Object.keys(room.memory.builder_creeps).length<3){
+        if(room.spawn !== null &&
+        Object.keys(room.memory.active_sites).length > Object.keys(room.memory.builder_creeps).length && 
+        Object.keys(room.memory.builder_creeps).length<3){
             room.spawn.request_creep('builder')
         }
         if(work_capacity > total_cost){
