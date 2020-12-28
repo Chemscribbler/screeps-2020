@@ -10,7 +10,7 @@ Creep.prototype.init_dist_builder = function(){
 
 Creep.prototype.cleanup_dist_builder = function(){
     if(this.memory.respawn_request){
-        Game.rooms[this.memory.origin_room].spawns.request_creep("dist_builder")
+        Game.rooms[this.memory.origin_room].spawns.print_dist_builder(this.memory.target_room)
     }
 }
 

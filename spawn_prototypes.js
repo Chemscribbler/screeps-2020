@@ -64,11 +64,10 @@ Spawn.prototype.print_creep = function(custom_memory){
         }
         var post_order = Object.keys(this.memory.orders).length
         console.log(`Filling order for ${creep_role}. There were ${pre_order} orders. There are now ${post_order}.`)
-        this.spawnCreep(creep_template,
+        return this.spawnCreep(creep_template,
             creep_role+Game.time%3000,
             {memory: custom_memory}
             )
-        var pre_order = Object.keys(this.memory.orders).length
     } 
 }
 
@@ -156,5 +155,17 @@ Spawn.prototype.print_scout = function(target_room){
             "role":'scout',
             "init":false,
             "target_room":target_room
+        }})
+}
+
+Spawn.prototype.print_dist_builder = function(target_room){
+    const body = this.gen_creep_body('builder')
+    return this.spawnCreep(
+        body,
+        `distbuilder${Game.time}`,
+        {memory: {
+            'role':'dist_builder',
+            'init':false,
+            'target_room':target_room
         }})
 }
