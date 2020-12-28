@@ -41,7 +41,10 @@ Spawn.prototype.remove_highest_request = function(){
     delete this.memory.orders[highest_priority_key]
 }
 
-Spawn.prototype.print_creep = function(){
+Spawn.prototype.print_creep = function(custom_memory){
+    if(custom_memory === null){
+        custom_memory = {'role': creep_role, 'init':false, 'target': null}
+    }
     const creep_role = this.choose_next_creep()
     if(creep_role === null){
         return;
@@ -63,7 +66,7 @@ Spawn.prototype.print_creep = function(){
         console.log(`Filling order for ${creep_role}. There were ${pre_order} orders. There are now ${post_order}.`)
         this.spawnCreep(creep_template,
             creep_role+Game.time%3000,
-            {memory: {'role': creep_role, 'assigned': false, 'init':false, 'target': null}}
+            {memory: custom_memory}
             )
         var pre_order = Object.keys(this.memory.orders).length
     } 
