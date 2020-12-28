@@ -75,12 +75,13 @@ Creep.prototype.dist_builder_role = function(){
             this.moveTo(this.memory.target_dest.x, this.memory.target_dest.y)
         }
     } else {
-        if(this.room.name === this.memory.target_room){
+        if(this.pos.roomName === this.memory.target_room){
             if(this.memory.target === null){
                 this.memory.target = this.get_next_site()
                 if(this.memory.target === null){
                     console.log(`${this.name} can find no projects`)
                 }
+                this.say("targeting")
             }
             this.try_build()
         } else {
