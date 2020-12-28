@@ -41,13 +41,14 @@ Spawn.prototype.remove_highest_request = function(){
     delete this.memory.orders[highest_priority_key]
 }
 
-Spawn.prototype.print_creep = function(custom_memory){
-    if(custom_memory === null){
-        custom_memory = {'role': creep_role, 'init':false, 'target': null}
-    }
+Spawn.prototype.print_creep = function(custom_memory=null){
     const creep_role = this.choose_next_creep()
     if(creep_role === null){
         return;
+    }
+
+    if(custom_memory === null){
+        custom_memory = {'role': creep_role, 'init':false, 'target': null}
     }
     var creep_template = []
     if(this.room.controller.level === 1){
