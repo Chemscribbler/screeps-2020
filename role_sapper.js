@@ -5,34 +5,10 @@ Creep.prototype.init_sapper = function(){
 }
 
 Creep.prototype.cleanup_sapper = function(){
-    
+
 }
 
 Creep.prototype.sapper_role = function(){
-    var target = Game.getObjectById(this.memory.target)
-    if (!this.valid_target){
-        if(Game.time < this.memory.next_check){
-            return "Sleeping"
-        }
-        target = this.find_target()
-        this.memory.target = target
-    } else{
-        if(Game.time % 30 !== 0){
-            target = Game.getObjectById(this.memory.target)
-        }      
-    }
-    var result = this.dismantle(target)
-    switch(result){
-        case ERR_NOT_IN_RANGE:
-            this.moveTo(target)
-            break;
-        case ERR_INVALID_TARGET:
-            this.moveTo(target)
-            this.memory.next_check = Game.time + 20
-        default:
-            break;
-    }
-
     Creep.prototype.find_target = function(){
         if(this.room.name !== this.memory.target_room){
             const exit_const = this.room.findExitTo(this.memory.target_room)
@@ -75,4 +51,29 @@ Creep.prototype.sapper_role = function(){
             }
         }
     })
+
+    var target = Game.getObjectById(this.memory.target)
+    if (!this.valid_target){
+        if(Game.time < this.memory.next_check){
+            return "Sleeping"
+        }
+        target = this.find_target()
+        this.memory.target = target
+    } else{
+        if(Game.time % 30 !== 0){
+            target = Game.getObjectById(this.memory.target)
+        }      
+    }
+    var result = this.dismantle(target)
+    switch(result){
+        case ERR_NOT_IN_RANGE:
+            this.moveTo(target)
+            break;
+        case ERR_INVALID_TARGET:
+            this.moveTo(target)
+            this.memory.next_check = Game.time + 20
+        default:
+            break;
+    }
+    this.memory.last_room_tick = this.room.name
 }
