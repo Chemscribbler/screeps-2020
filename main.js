@@ -9,6 +9,7 @@ require('role_rcl1')
 require('role_upgrader')
 require('role_builder')
 require('tower_code')
+require('role_sapper')
 
 profiler.enable();
 module.exports.loop = function (){
