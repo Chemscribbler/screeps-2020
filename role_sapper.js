@@ -31,8 +31,7 @@ Creep.prototype.sapper_role = function(){
         }
     }
 
-    Object.defineProperty(Creep.prototype, "valid_target", {
-        get: function(){
+    Creep.prototype.valid_target = function(){
             if(target === null){
                 return false
             //Target could be RoomPosition or Wall/Rampart
@@ -50,10 +49,9 @@ Creep.prototype.sapper_role = function(){
                 return false
             }
         }
-    })
 
     var target = Game.getObjectById(this.memory.target)
-    if (!this.valid_target){
+    if (!this.valid_target()){
         if(Game.time < this.memory.next_check){
             return "Sleeping"
         }
