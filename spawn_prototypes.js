@@ -80,7 +80,8 @@ Spawn.prototype.gen_creep_body = function(creep_role){
         'carrier': {'part_ratios':{'carry':2,'move':1},'ratio_cost':150,'special_rules':true},
         'builder': {'part_ratios':{'work':1,'carry':3,'move':1},'ratio_cost':300,'special_rules':false},
         'upgrader': {'part_ratios':{'work':2,'carry':1,'move':1},'ratio_cost':300,'special_rules':false},
-        'rcl1': {'part_ratios':{'work':1,'carry':1,'move':1},'ratio_cost':200,'special_rules':true}
+        'rcl1': {'part_ratios':{'work':1,'carry':1,'move':1},'ratio_cost':200,'special_rules':true},
+        'dist_builder':{'part_ratios':{'work':1,'carry':4,'move':5},'ratio_cost':550,'special_rules':false}
     }
     if(body_plans[creep_role]['special_rules']){
         switch(creep_role){
@@ -159,7 +160,7 @@ Spawn.prototype.print_scout = function(target_room){
 }
 
 Spawn.prototype.print_dist_builder = function(target_room){
-    const body = this.gen_creep_body('builder')
+    const body = this.gen_creep_body('dist_builder')
     return this.spawnCreep(
         body,
         `distbuilder${Game.time}`,
