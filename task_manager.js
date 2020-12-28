@@ -1,136 +1,199 @@
-const creep_lookup = {
-    'harvester':8,
-    'carrier':6,
-    'builder':4,
-    'upgrader':2,
-    'rcl1':8
-}
-
-Spawn.prototype.request_creep = function(req_string){
-    if(this.spawning){
-        console.log("Blocked request")
-        return -11
-    }
-
-    const req_value = creep_lookup[req_string]
-    if(this.memory.orders === undefined){
-        this.memory.orders = {}
-    }
-    if(this.memory.orders[req_value] === undefined){
-           this.memory.orders[req_value] = req_string
-           return 0
-    } else{
-        return -11
-    }
-
-}
-
-Spawn.prototype.choose_next_creep = function(){
-    let priority= 0, role=null;
-    for(const [key, value] of Object.entries(this.memory.orders)){
-        if(key > priority){
-            priority = key
-            role = value
+var manage_harvesting = function(room){
+    /*
+    Manages harvesters in all rooms
+      Requisitions new harvesters
+      Estimates energy production
+      Gives paths to harvesters
+    */
+        if(room.memory.num_sources === undefined){
+            room.memory.num_sources = room.find(FIND_SOURCES).length
         }
-    }
-    return role
-}
-
-Spawn.prototype.remove_highest_request = function(){
-    const highest_priority_key = Math.max(Object.keys(this.memory.orders))
-    delete this.memory.orders[highest_priority_key]
-}
-
-Spawn.prototype.print_creep = function(){
-    const creep_role = this.choose_next_creep()
-    if(creep_role === null){
-        return;
-    }
-    var creep_template = []
-    if(this.room.controller.level === 1){
-        creep_template = [WORK,MOVE,MOVE,CARRY,CARRY]
-    } else {
-        creep_template = this.gen_creep_body(creep_role)
-    }
-    if(this.spawnCreep(creep_template,creep_role+Game.time%3000,{dryRun: true}) === 0){
-        var pre_order = Object.keys(this.memory.orders).length
-        for(const key in this.memory.orders){
-            if (this.memory.orders[key] === creep_role){
-                delete this.memory.orders[key]
+        var active_harvester_work = 0
+        if(room.memory.harvester_creeps === undefined){
+            room.memory.harvester_creeps = {}
+        }
+    
+        if(Object.keys(room.memory.harvester_creeps).length <room.memory.num_sources){
+            if(room.source_storage.length === room.memory.num_sources){
+                room.spawn.request_creep('harvester')
+            } else{
+                room.spawn.request_creep('rcl1')
             }
         }
-        var post_order = Object.keys(this.memory.orders).length
-        console.log(`Filling order for ${creep_role}. There were ${pre_order} orders. There are now ${post_order}.`)
-        this.spawnCreep(creep_template,
-            creep_role+Game.time%3000,
-            {memory: {'role': creep_role, 'assigned': false, 'init':false, 'target': null}}
-            )
-        var pre_order = Object.keys(this.memory.orders).length
-    } 
-}
-
-Spawn.prototype.gen_creep_body = function(creep_role){
-    var energy_budget = this.store.getCapacity(RESOURCE_ENERGY) + this.room.find(FIND_STRUCTURES,{filter: s => s.structureType === STRUCTURE_EXTENSION}).length*50
-    // //Each creep has a body plan that is a repitition of some number of body parts
-    // //Each one has a cost- and then the plan is repeated to build largest under capacity
-    const body_plans = {
-        'harvester': {'part_ratios':{'work':2,'move':1},'ratio_cost':250,'special_rules':true},
-        'carrier': {'part_ratios':{'carry':2,'move':1},'ratio_cost':150,'special_rules':true},
-        'builder': {'part_ratios':{'work':1,'carry':3,'move':1},'ratio_cost':300,'special_rules':false},
-        'upgrader': {'part_ratios':{'work':2,'carry':1,'move':1},'ratio_cost':300,'special_rules':false},
-        'rcl1': {'part_ratios':{'work':1,'carry':1,'move':1},'ratio_cost':200,'special_rules':true}
-    }
-    // console.log(body_plans[creep_role])
-    if(body_plans[creep_role]['special_rules']){
-        switch(creep_role){
-            case 'harvester':
-                return Spawn.prototype.gen_harvester_body(energy_budget)
-            case 'rcl1':
-                return [WORK,CARRY, CARRY,MOVE, MOVE]
-            case 'carrier':
-                energy_budget = Math.min(energy_budget, BODYPART_COST['move']*5+BODYPART_COST['carry']*10)
-                const sections = Math.floor(energy_budget/body_plans[creep_role]['ratio_cost'])
-                var body_template = []
-                for(let part in body_plans[creep_role]['part_ratios']){
-                    for (let index = 0; index < body_plans[creep_role]['part_ratios'][part]*sections; index++) {
-                        body_template.push(part)                
-                        
+    
+        for(const cID in room.memory.harvester_creeps){
+            try{
+                for(const i in Game.getObjectById(cID).body){
+                    if(Game.getObjectById(cID).type === WORK){
+                        active_harvester_work += 1
                     }
-                    
                 }
-                return body_template
-        }
-    } else {
-        const sections = Math.floor(energy_budget/body_plans[creep_role]['ratio_cost'])
-        var body_template = []
-        for(let part in body_plans[creep_role]['part_ratios']){
-            for (let index = 0; index < body_plans[creep_role]['part_ratios'][part]*sections; index++) {
-                body_template.push(part)                
+            }
+            catch(TypeError){
+                console.log(`Removing ${cID} from harvester memory`)
+                delete room.memory.harvester_creeps[cID]
             }
         }
-        // console.log(body_template)
-        return body_template
+    
+        return active_harvester_work*2*ENERGY_REGEN_TIME
+        //This returns energy harvested per/regen cycle in ideal circumstances
     }
-}
-
-Spawn.prototype.gen_harvester_body = function(energy_budget){
-    var body_template = []
-    if(energy_budget >= 750){
-        body_template = [WORK,WORK,WORK,WORK,WORK,WORK, MOVE, MOVE, MOVE]
-    }
-    else if(energy_budget >= 700){
-        body_template = [WORK,WORK,WORK,WORK,WORK,WORK, MOVE, MOVE]
-    }
-    else if(energy_budget >= 650){
-        body_template = [WORK,WORK,WORK,WORK,WORK,WORK, MOVE]
-    } else if (energy_budget >= 550){
-        body_template = [WORK,WORK,WORK,WORK,WORK,MOVE]
-    } else{
-        const num_works =  Math.floor((energy_budget-50)/100)
-        for (let index = 0; index < num_works; index++) {
-            body_template.push(WORK)            
+    
+    var manage_upgrading = function(room,energy_per_cycle){
+        /*
+        Manages Upgraders
+        Requisitions upgraders
+        Estimates energy consumption
+        */
+        if(room.memory.upgrader_creeps === undefined){
+           room.memory.upgrader_creeps = {}
         }
-        body_template.push(MOVE)
+        var work_count = 0
+        if(energy_per_cycle >= 0){
+            if(Object.keys(room.memory.upgrader_creeps).length === 0 || (room.free_energy > 40000 && Object.keys(room.memory.upgrader_creeps).length < 2)){
+                room.spawn.request_creep('upgrader')
+            } else {
+                for(creep in room.memory.upgrader_creeps){           
+                    for(part in Game.getObjectById(creep)){
+                        if(part === WORK){
+                            work_count++
+                        }
+                    }
+                }
+            }
+            // console.log(Math.max(0,energy_per_cycle-(work_count*ENERGY_REGEN_TIME)))
+            energy_per_cycle = Math.max(0,energy_per_cycle-(work_count*ENERGY_REGEN_TIME))
+        }
+        return energy_per_cycle
     }
-    return body_template
-}
+    
+    var manage_buildings = function(room,energy_per_cycle){
+    /* Manages Buildings
+      Requisitions builders for tasks
+      Orders build tasks by priority
+      Estimates energy consumption
+    */
+        const construction_priority = {
+            "extension": 10,
+            "storage": 8,
+            "container": 8,
+            "tower": 6,
+            "road": 2
+        }
+        if(room.memory.active_sites === undefined){
+            room.memory.active_sites = {}
+        }
+        if(room.memory.builder_creeps === undefined){
+            room.memory.builder_creeps = {}
+        }
+        var total_cost = 0
+        if(Game.time % 50 === 0){
+            var search = room.find(FIND_MY_CONSTRUCTION_SITES)
+            if(search.length > 0){
+                for(const siteNum in search){
+                    const site = search[siteNum]
+                    if(room.memory.active_sites[site.id]===undefined){
+                        room.memory.active_sites[site.id] = {
+                            "EnergyNeeded":site.progressTotal,
+                            'active_workers':null,
+                            'priority': construction_priority[site.structureType]}
+                        total_cost += site.progressTotal
+                    }
+                }
+            }
+        }
+    
+        for(const site in room.memory.active_sites){
+            actual_site = Game.getObjectById(site)
+            if(actual_site === null){
+                delete room.memory.active_sites[site]            
+            } else{
+                room.memory.active_sites[site]["EnergyNeeded"] = actual_site.progressTotal - actual_site.progress
+                room.memory.active_sites[site]['priority'] = construction_priority[actual_site.structureType] + actual_site.progress/actual_site.progressTotal
+                total_cost += actual_site.progressTotal - actual_site.progress 
+            }       
+        }
+        var work_capacity = 0
+        for (const creepId in room.memory.builder_creeps) {
+            for (const part in Game.getObjectById(creepId)) {
+                if(part === 'WORK'){
+                    work_capacity += 5*ENERGY_REGEN_TIME
+                }
+            }
+        }
+        // if((work_capacity*5 < total_cost || (total_cost > 0 && Object.keys(room.memory.builder_creeps).length === 0))&& room.controller.level > 1){
+        //     room.spawn.request_creep('builder')
+        // }
+    
+        if(Object.keys(room.memory.active_sites).length > Object.keys(room.memory.builder_creeps).length && Object.keys(room.memory.builder_creeps).length<3){
+            room.spawn.request_creep('builder')
+        }
+        if(work_capacity > total_cost){
+            return energy_per_cycle - total_cost
+        } else{
+            return energy_per_cycle - work_capacity
+        }
+    }
+    
+    var manage_defense = function(room,energy_per_cycle){
+    /* Manages defender Creeps and towers
+        Requisitions defenders
+        Targets enemies
+    */}
+    
+    var manage_carriers = function(room){
+        if(room.memory.source_storage > 0){
+            if(room.memory.carrier_creeps === undefined){
+                room.memory.carrier_creeps = {}
+            }
+            if(Object.keys(room.memory.carrier_creeps).length < 2){
+                room.spawn.request_creep('carrier')        
+            }
+        }
+    }
+    
+    var manage_repairs = function(room){
+       if(Game.time % 100 === 0){
+           room.memory.repair_sites = {}
+           console.log("Scanning for repairs")
+           var search = room.find(FIND_STRUCTURES,{filter: s => (s.hits/s.hitsMax < .4 && s.structureType !== STRUCTURE_RAMPART)})
+           search.forEach(site =>{
+            //   console.log(site)
+               room.memory.repair_sites[site.id] = site.hits/site.hitsMax
+           })
+       }
+       if(Object.keys(room.memory.repair_sites).length > 0 && Object.keys(room.memory.builder_creeps).length === 0){
+           room.spawn.request_creep("builder")
+       }
+    }
+    
+    var energy_report = function(room, energy_avaible, harvesting_rate){
+        var def_or_sur = null
+        if(energy_avaible > 0){
+            def_or_sur = "surpluss"
+        } else{
+            def_or_sur = 'deficit'
+        }
+        console.log(`Room ${room.name}: has an energy ${def_or_sur} of ${energy_avaible} per cycle. Harvesting ${harvesting_rate}`)    
+    }
+    
+    var task_manager = function(){
+        /*
+        Manages all of different sub-managers
+        room_dict: enumerated dictionary of room objects
+        spawn_dict: enumerated dictionary of spawn object (proxy for Game.)
+        */
+        for(const r in Game.rooms){
+            const room = Game.rooms[r]
+            var energy_available = manage_harvesting(room)
+            var harvesting_rate = energy_available
+            energy_available = manage_buildings(room,energy_available)
+            energy_available = manage_upgrading(room,energy_available)
+            manage_carriers(room)
+            manage_repairs(room)
+            // energy_report(room,energy_available,harvesting_rate)
+        }
+    
+    }
+    
+    module.exports = task_manager;
