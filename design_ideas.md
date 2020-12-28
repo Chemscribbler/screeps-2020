@@ -65,8 +65,13 @@ One option would be that a manager assigns roles based on creep's capabilities
 - Build sites in priority
 - Repair sties in priority
 - Upgrade controller
+- Create build sites
+- Spawn creeps
+- Defend
+- Attack
+
+### Task should probably be a class
 Every task is composed with:
-Task should probably be a class
 ```
 {
     TaskId: number
