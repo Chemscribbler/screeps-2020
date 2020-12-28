@@ -4,6 +4,10 @@ Creep.prototype.init_sapper = function(){
     this.last_room_tick = this.room.name
 }
 
+Creep.prototype.cleanup_sapper = function(){
+    
+}
+
 Creep.prototype.sapper_role = function(){
     var target = Game.getObjectById(this.memory.target)
     if (!this.valid_target){
