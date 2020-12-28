@@ -28,6 +28,8 @@ Creep.prototype.initialize = function(){
             case 'rcl1':
                 this.init_rcl1()
                 break
+            case 'sapper':
+                this.init_sapper()
             default:
                 break;
         }
@@ -53,6 +55,9 @@ Creep.prototype.cleanup_role = function(force=false){
                 case 'rcl1':
                     this.cleanup_rcl1()
                     break;
+                case 'sapper':
+                    this.cleanup_sapper()
+                    break;
                 default:
                     break;
         }
@@ -77,6 +82,8 @@ Creep.prototype.perform_role = function(){
         case 'rcl1':
             this.rcl1_role()
             break;
+        case 'sapper':
+            this.sapper_role()
         default:
             break;
     }
@@ -122,12 +129,8 @@ Creep.prototype.check_pickup= function(target){
             return this.find_energy()
         }
     } else {
-        if(this.ticksToLive % 10 === 4){
-            if(target.id === this.find_energy().id){
-                return target
-            } else {
-                return this.find_energy()
-            }
+        if(this.ticksToLive % 20 === 4){
+            return this.find_energy()
         } else {
             return target
         }
