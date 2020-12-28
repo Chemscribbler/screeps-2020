@@ -55,7 +55,7 @@ Creep.prototype.dist_builder_role = function(){
     //Target can be room position or object--- maybe separate these out
     // this.validate_current_goal()
     
-    if(this.store.getUsedCapacity === 0){
+    if(this.store.getUsedCapacity(RESOURCE_ENERGY) === 0){
         if(this.room.name === this.memory.origin_room){
             if(this.memory.target === null){
                 this.memory.target = this.find_energy()

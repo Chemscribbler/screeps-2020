@@ -81,7 +81,8 @@ var manage_harvesting = function(room){
             "storage": 8,
             "container": 8,
             "tower": 6,
-            "road": 2
+            "road": 2,
+            "spawn": 12
         }
         if(room.memory.active_sites === undefined){
             room.memory.active_sites = {}

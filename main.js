@@ -12,6 +12,7 @@ require('tower_code')
 require('role_sapper')
 require('role_claimer')
 require('role_scout')
+require('role_dist_builder')
 
 profiler.enable();
 module.exports.loop = function (){
