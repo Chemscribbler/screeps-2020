@@ -133,3 +133,14 @@ Spawn.prototype.gen_harvester_body = function(energy_budget){
     }
     return body_template
 }
+
+Spawn.prototype.print_claimer = function(target_room){
+    this.spawnCreep(
+        [CLAIM,MOVE],
+        `Claimer${Game.time % 1000}`,
+        {memory:{
+            "role":'claimer',
+            "init":false,
+            "target_room":target_room
+        }})
+}
