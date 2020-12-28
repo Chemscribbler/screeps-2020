@@ -34,6 +34,9 @@ Creep.prototype.initialize = function(){
             case 'claimer':
                 this.init_claimer()
                 break
+            case 'scout':
+                this.init_scout()
+                break
             default:
                 break;
         }
@@ -65,6 +68,9 @@ Creep.prototype.cleanup_role = function(force=false){
                 case 'claimer':
                     this.cleanup_claimer()
                     break;
+                case 'scout':
+                    this.cleanup_scout()
+                    break
                 default:
                     break;
         }
@@ -94,6 +100,9 @@ Creep.prototype.perform_role = function(){
             break;
         case 'claimer':
             this.claimer_role()
+            break;
+        case 'scout':
+            this.scoute_role()
             break;
         default:
             break;

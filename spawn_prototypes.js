@@ -144,3 +144,14 @@ Spawn.prototype.print_claimer = function(target_room){
             "target_room":target_room
         }})
 }
+
+Spawn.prototype.print_scout = function(target_room){
+    return this.spawnCreep(
+        [TOUGH,MOVE],
+        `scout${Game.time % 1000}`,
+        {memory:{
+            "role":'scout',
+            "init":false,
+            "target_room":target_room
+        }})
+}
