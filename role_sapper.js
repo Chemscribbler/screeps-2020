@@ -17,7 +17,7 @@ Creep.prototype.sapper_role = function(){
             var targets = this.pos.findInRange(
                 FIND_STRUCTURES,3,{filter: s => s.structureType === STRUCTURE_WALL || s.structureType === STRUCTURE_RAMPART})
             if(!targets.length){
-                target = new RoomPosition(25, 25, this.room)
+                target = new RoomPosition(25, 25, this.room.name)
             }
             var min_height = Math.pow(10,9)
             targets.forEach(wall =>{
@@ -27,12 +27,11 @@ Creep.prototype.sapper_role = function(){
                 }
             })
             this.memory.target = target.id
-
         }
     }
 
     Creep.prototype.valid_target = function(){
-            if(target === null && this.memory.target.roomName === undefined){
+            if(target === null || this.memory.target.roomName === undefined){
                 return false
             //Target could be RoomPosition or Wall/Rampart
             //Logic is if this is a position- check to see if target.room is a property
@@ -53,10 +52,10 @@ Creep.prototype.sapper_role = function(){
     var target = Game.getObjectById(this.memory.target)
     if (!this.valid_target()){
         if(Game.time < this.memory.next_check){
-            return "Sleeping"
+            this.say("❄️")
+            return false
         }
         target = this.find_target()
-        this.memory.target = target
     } else{
         if(Game.time % 30 !== 0){
             target = Game.getObjectById(this.memory.target)
