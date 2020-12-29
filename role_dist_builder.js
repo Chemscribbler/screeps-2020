@@ -6,6 +6,7 @@ Creep.prototype.init_dist_builder = function(){
     this.memory.respawn_request = true
     this.memory.target_dest = null
     this.memory.siteID = null
+    this.memory.target = this.find_energy()
 }
 
 Creep.prototype.cleanup_dist_builder = function(){
