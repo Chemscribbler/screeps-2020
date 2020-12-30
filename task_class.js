@@ -1,11 +1,29 @@
 class Task extends Object {
-    constructor(task_number,priority=0){
-        id = task_number
-        priority = priority
-        requires = []
-        name = "generic"
-        if(Memory.tasks === undefined){
-            Memory.tasks = {}
+    constructor(
+        id=null,
+        priority=0,
+        type="generic",
+        cid=null
+    ){
+        if(id === null){
+            this.id = Memory.tid
+            Memory.tid += 1
+        } else{
+            this.id = id
+        }
+
+        this.priority = priority
+        this.type = type
+        this.cid = cid
+        Memory.tasks[this.id] = this
+    }
+
+    toJson(){
+        return {
+            id: this.id,
+            priority: this.priority,
+            type: this.type,
+            cid: this.cid
         }
     }
 
@@ -15,21 +33,12 @@ class Task extends Object {
         try {
             delete Memory.tasks[this.id]
         } catch (error) {
-            console.log(`Task ${this.id}:${this.name} was not in task list`)
+            console.log(`Task ${this.id}:${this.type} was not in task list`)
         }
     }
 }
 
 class PickupEnergy_T extends Task {
-    constructor(task_number, drp_nrg_id){
-        id = task_number
-        priority = 700
-        requires = [CARRY]
-        drp_nrg_id = drp_nrg_id
-        creep = this.assign_creep()
-        name = 'pickup'
-    }
-
     assign_task(){
         Game.getObjectById()
     }

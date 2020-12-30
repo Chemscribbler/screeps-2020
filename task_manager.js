@@ -2,7 +2,7 @@ var task_runner = function(){
     var tasks = find_tasks()
     tasks.sort((a,b) => a[priority] - b[priority])
     var assigned_tasks = distribute_tasks(tasks)
-    run_tasks(assigned_tasks)    
+    run_tasks(assigned_tasks)  
 }
 
 var find_tasks = function(){
