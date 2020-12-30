@@ -70,3 +70,12 @@ var smart_parse = function(taskObj){
     }
     taskMap[taskObj.name](taskObj)
 }
+
+
+module.exports = {
+    task_runner,
+    smart_parse,
+    find_tasks,
+    distribute_tasks,
+    run_tasks
+}
