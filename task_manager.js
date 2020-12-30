@@ -1,5 +1,13 @@
+/*
+This is the master function
+Goals is that find tasks find all tasks in memory and in play space
+
+*/
 var task_runner = function(){
     var tasks = find_tasks()
+    tasks.forEach(task => {
+        task.determine_priority()
+    })
     tasks.sort((a,b) => a[priority] - b[priority])
     var assigned_tasks = distribute_tasks(tasks)
     run_tasks(assigned_tasks)  
@@ -10,7 +18,7 @@ var find_tasks = function(){
     //Returns an arry of tasks, each one containing a key'd priority value, and ID
 
     for(const task in Memory.storeTasks){
-        tasks.push(JSON.parse(Memory.storeTasks[task]))
+        tasks.push(smart_parse(task))
     }
 
     var tasks = []
@@ -36,7 +44,7 @@ var distribute_tasks = function(tasks){
             assigned_tasks.push(task)
         } else {
             //Picking a doer
-            task.pick_doer()
+            task.assign_task()
             if(task.creepId){
                 assigned_tasks.push(task)
             }
@@ -50,3 +58,15 @@ var run_tasks = function(assigned_tasks){
         const value = task.run(task.creepId)
     }
 } 
+
+var smart_parse = function(taskObj){
+    //Picks the right task_class to deseralize
+    var taskMap = {
+        "generic": Task,
+        "pickup_energy":PickupEnergy_Task,
+        "move":Move_Task,
+        "withdraw_energy":WithdrawEnergy_Task,
+        'harvest':Harvest_Task
+    }
+    taskMap[taskObj.name](taskObj)
+}
